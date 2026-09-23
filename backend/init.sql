@@ -1,0 +1,1 @@
+-- SQLAlchemy creates the application tables on startup.\n
