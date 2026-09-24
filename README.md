@@ -5,6 +5,21 @@ FinGuard is a production-style personal financial health and early-warning platf
 
 ---
 
+## 🚀 1-Click Cloud Deployment Links
+
+Deploy this repository to your preferred cloud platform in one click:
+
+| Cloud Platform | Deployment Method | 1-Click Deploy Link |
+| :--- | :--- | :--- |
+| **Vercel** | Serverless Web + Python API | [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FHarini27-ai%2FFinGuard_TeamZeroBug) |
+| **Render** | Unified Web Service | [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Harini27-ai/FinGuard_TeamZeroBug) |
+| **Railway** | Full-Stack Web Container | [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template?template=https%3A%2F%2Fgithub.com%2FHarini27-ai%2FFinGuard_TeamZeroBug) |
+
+### Direct Vercel Import URL:
+👉 **[https://vercel.com/new/import?s=https://github.com/Harini27-ai/FinGuard_TeamZeroBug](https://vercel.com/new/import?s=https://github.com/Harini27-ai/FinGuard_TeamZeroBug)**
+
+---
+
 ## Architecture Overview
 
 - **Backend**: FastAPI, SQLAlchemy (SQLite for rapid local dev + PostgreSQL compatibility), PyJWT, Passlib/Bcrypt, Pydantic v2.
@@ -23,8 +38,18 @@ FinGuard is a production-style personal financial health and early-warning platf
 
 ## Windows Quick Setup (Local - No Docker Required)
 
-### 1. Backend Setup
+### 1. 1-Click Production Runner (Fastest)
 
+Double-click `start_production.bat` in the project root. This automatically activates the virtual environment, executes database migrations, seeds demo records, and starts the unified production server on port 8000:
+
+- **Web Application**: [http://localhost:8000/](http://localhost:8000/)
+- **Swagger API Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
+
+---
+
+### 2. Manual Development Setup
+
+#### Backend Setup
 Open PowerShell in the project directory:
 
 ```powershell
@@ -47,10 +72,7 @@ The backend API will be live at:
 - **API Root / Swagger Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
 - **Health Check**: [http://localhost:8000/api/health](http://localhost:8000/api/health)
 
----
-
-### 2. Frontend Setup
-
+#### Frontend Setup
 Open another PowerShell window:
 
 ```powershell
