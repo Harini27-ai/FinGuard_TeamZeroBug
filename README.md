@@ -1,99 +1,137 @@
-# FinGuard — AI Fraud Prevention (Team ZeroBug)
+# FinGuard — Financial Immune System & Real-Time Defense
+> **Predict Financial Stress. Prevent Financial Crisis.**
 
-Runnable MVP based on the uploaded FinGuard pitch deck.
+FinGuard is a production-style personal financial health and early-warning platform combined with an autonomous real-time transaction risk and fraud defense pipeline.
 
-Architecture represented in the deck: FastAPI + React dashboard, PostgreSQL, Neo4j, Redis, with a machine-learning/graph layer. The MVP implements real-time transaction scoring, behavioral signals, relationship-graph checks, and autonomous action recommendations.
+---
 
-## Features
-- Transaction risk scoring API
-- Behavioral anomaly signals
-- Account/device/IP relationship checks
-- APPROVE / STEP_UP / FREEZE policy
-- PostgreSQL persistence
-- Neo4j graph persistence
-- Redis service included in Docker stack
-- React dashboard with live simulation
-- Docker Compose
-- Synthetic demo seed data
+## Architecture Overview
 
-> The pitch-deck figures such as 99.4% precision and 45ms latency are presentation claims/targets. This MVP does not claim to reproduce them. Production validation requires a representative labeled dataset and benchmarking.
+- **Backend**: FastAPI, SQLAlchemy (SQLite for rapid local dev + PostgreSQL compatibility), PyJWT, Passlib/Bcrypt, Pydantic v2.
+- **Frontend**: React 18, Vite, Tailwind CSS, Recharts, Lucide React icons.
+- **Engines & Intelligence**:
+  - Dynamic 0–100 **Financial Health Score** (8 weighted factors)
+  - Modular **Financial Stress Prediction Engine**
+  - **Day-25 Early Warning Engine** for month-end cash depletion
+  - **Emergency Fund Predictor** (6-month runway benchmark)
+  - **Spending Anomaly Detection** with statistical outlier classification
+  - **What-If Financial Stress Simulator** (non-destructive in-memory modeling)
+  - **AI Financial Assistant** scoped strictly to authenticated user data
+  - Preserved **Team ZeroBug Autonomous Real-Time Fraud Engine** (Graph + Behavioral + Velocity Scoring)
 
-## Run with Docker
+---
 
-```bash
-docker compose up --build
-```
+## Windows Quick Setup (Local - No Docker Required)
 
-Open:
-- Dashboard: http://localhost:5173
-- API docs: http://localhost:8000/docs
-- Neo4j: http://localhost:7474
+### 1. Backend Setup
 
-Neo4j credentials:
-- user: neo4j
-- password: finGuard123
+Open PowerShell in the project directory:
 
-## Local backend
+```powershell
+cd c:\hackathon\FinGuard_TeamZeroBug_Complete\FinGuard\backend
 
-```bash
-cd backend
-python -m venv .venv
-.venv\Scripts\activate
+# Activate virtual environment
+.\.venv\Scripts\activate
+
+# Install dependencies (if not already installed)
 pip install -r requirements.txt
-uvicorn app.main:app --reload
+
+# Initialize database and populate demo records
+python seed.py
+
+# Start the FastAPI server
+uvicorn app.main:app --reload --port 8000
 ```
 
-For a simple local demo without external databases, use:
-```env
-DATABASE_URL=sqlite:///./finguard.db
-REDIS_URL=
-NEO4J_URI=
+The backend API will be live at:
+- **API Root / Swagger Docs**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- **Health Check**: [http://localhost:8000/api/health](http://localhost:8000/api/health)
+
+---
+
+### 2. Frontend Setup
+
+Open another PowerShell window:
+
+```powershell
+cd c:\hackathon\FinGuard_TeamZeroBug_Complete\FinGuard\frontend
+
+# Start Vite dev server
+npm run dev
 ```
 
-## Main API
+The React dashboard will be live at:
+- **Dashboard**: [http://localhost:5173](http://localhost:5173)
 
-`GET /api/health`
+---
 
-`GET /api/dashboard`
+## 1-Click Demo / Evaluator Credentials
 
-`GET /api/transactions?limit=20`
+You do not need to create accounts manually. Use either:
+1. **1-Click Evaluator Demo Login**: Click the **1-Click Evaluator Demo Login** button on the sign-in screen.
+2. **Manual Login**:
+   - **Email**: `demo@finguard.ai`
+   - **Password**: `DemoPassword123!`
+3. **Load Demo Data**: Click the **Load Demo Data** button in the top navbar at any time to regenerate realistic Indian Rupee accounts (HDFC, SBI, ICICI), transactions, active EMIs, and early warnings.
 
-`POST /api/transactions/score`
+---
 
-Example body:
-```json
-{
-  "account_id": "ACC-1001",
-  "amount": 82000,
-  "currency": "INR",
-  "merchant": "Unknown Crypto Exchange",
-  "device_id": "DEV-99",
-  "ip_address": "185.91.22.7",
-  "country": "IN",
-  "velocity_10m": 7,
-  "device_change": true,
-  "location_distance_km": 420,
-  "typing_deviation": 0.68,
-  "mouse_deviation": 0.55
-}
+## Key API Endpoints
+
+### Authentication & Security
+- `POST /api/auth/register` — Register a new user
+- `POST /api/auth/login` — Login & receive JWT access + refresh tokens
+- `POST /api/auth/refresh` — Refresh expired access token
+- `GET /api/auth/me` — Current authenticated user profile
+- `POST /api/auth/logout` — Revoke active session tokens
+- `GET /api/security/overview` — Audit active browser sessions & login history
+- `POST /api/security/change-password` — Change password & revoke older sessions
+- `DELETE /api/security/account` — Permanently delete account and all data
+
+### Financial Accounts & Transactions
+- `GET /api/accounts` & `POST /api/accounts` — Manage bank accounts (stores only last 4 digits)
+- `GET /api/transactions` & `POST /api/transactions` — Add/filter/search transactions
+- `GET /api/transactions/summary` — Monthly revenue, outflow, and category breakdown
+
+### EMI & Debt Tracker
+- `GET /api/emi` & `POST /api/emi` — Manage active loans
+- `GET /api/emi/summary` — DTI (Debt-to-Income) ratio, burden level, and upcoming payment warnings
+
+### Intelligence & Early Warnings
+- `GET /api/dashboard` — Unified dashboard metrics, charts, and live feed
+- `GET /api/financial-score` — Dynamic 0–100 health score with contributing factors
+- `GET /api/prediction` — Financial stress score & projected stress period
+- `GET /api/day25-warning` — Day-25 cash depletion forecasting
+- `GET /api/emergency-fund` — Emergency fund months of coverage & target gap
+- `GET /api/expense-prediction` — Next month expense projection
+- `POST /api/simulator` — What-If financial simulator
+- `GET /api/recommendations` — Personalized dynamic recommendations
+- `POST /api/assistant/chat` — Scoped AI Financial Assistant
+- `GET /api/reports` — Monthly financial reports by `YYYY-MM`
+- `GET /api/anomalies` & `PUT /api/anomalies/{id}/status` — Mark anomalies Expected/Unexpected
+- `GET /api/alerts` — Smart alert management
+
+### Real-Time Fraud Defense (Preserved)
+- `POST /api/transactions/score` — Real-time transaction risk scoring
+- `POST /api/transactions/simulate` — Live fraud transaction simulator
+
+---
+
+## Running Automated Tests
+
+Run the full pytest suite from the backend directory:
+
+```powershell
+cd c:\hackathon\FinGuard_TeamZeroBug_Complete\FinGuard\backend
+.\.venv\Scripts\pytest -v
 ```
 
-`POST /api/transactions/simulate`
-
-The dashboard's **Simulate Transaction** button uses the last endpoint and updates the feed.
-
-## Risk policy in this demo
-- `< 0.35` → APPROVE
-- `0.35–0.70` → STEP_UP
-- `> 0.70` → FREEZE
-
-This is a hackathon/demo policy, not a production financial decision model.
-
-## Production upgrades
-- Train a real GNN with PyTorch Geometric.
-- Train/calibrate XGBoost using versioned fraud labels.
-- Add Kafka/Redpanda for transaction streams.
-- Add model registry, feature store and drift monitoring.
-- Add authentication, authorization and audit logs.
-- Add human review and explainability.
-- Add idempotency, rate limiting and encrypted sensitive data.
+All 8 test suites cover:
+- Authentication & JWT token validation
+- User data isolation (User A cannot access User B's records)
+- Transactions & monthly summaries
+- Financial Health Score (0-100 logic)
+- Stress prediction & Day-25 warnings
+- Non-destructive What-If simulator
+- Scoped AI Assistant queries
+- Legacy real-time fraud defense routes

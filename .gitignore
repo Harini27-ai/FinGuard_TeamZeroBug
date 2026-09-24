@@ -5,3 +5,6 @@ __pycache__/
 node_modules/
 *.pyc
 *.db
+.pytest_cache/
+.DS_Store
+Thumbs.db

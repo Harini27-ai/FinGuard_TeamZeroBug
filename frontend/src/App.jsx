@@ -1,46 +1,168 @@
-import {useEffect,useState} from "react";
-import {ShieldCheck,Activity,Network,Zap,RefreshCw,AlertTriangle} from "lucide-react";
-const API=import.meta.env.VITE_API_URL||"http://localhost:8000";
+import { useState, useEffect } from "react";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+import Navbar from "./components/Navbar";
+import AlertsModal from "./components/AlertsModal";
+import DashboardView from "./views/DashboardView";
+import AccountsView from "./views/AccountsView";
+import TransactionsView from "./views/TransactionsView";
+import EMIView from "./views/EMIView";
+import GoalsView from "./views/GoalsView";
+import SimulatorView from "./views/SimulatorView";
+import AssistantView from "./views/AssistantView";
+import ReportsView from "./views/ReportsView";
+import SecurityView from "./views/SecurityView";
+import AuthModal from "./views/AuthModal";
+import { apiRequest } from "./api";
 
-function Metric({icon:Icon,label,value,sub}){return <div className="metric card"><div className="metric-icon"><Icon size={20}/></div><div><div className="metric-label">{label}</div><div className="metric-value">{value}</div><div className="metric-sub">{sub}</div></div></div>}
-function RiskBadge({action}){return <span className={`badge ${action.toLowerCase()}`}>{action}</span>}
+function AppContent() {
+  const { user, loading: authLoading } = useAuth();
+  const [activeTab, setActiveTab] = useState("dashboard");
+  const [dashboardData, setDashboardData] = useState(null);
+  const [unreadAlertsCount, setUnreadAlertsCount] = useState(0);
+  const [alertsModalOpen, setAlertsModalOpen] = useState(false);
+  const [refreshing, setRefreshing] = useState(false);
 
-export default function App(){
- const [data,setData]=useState(null),[busy,setBusy]=useState(false),[selected,setSelected]=useState(null);
- async function load(){const r=await fetch(`${API}/api/dashboard`);setData(await r.json())}
- async function simulate(){setBusy(true);try{const r=await fetch(`${API}/api/transactions/simulate`,{method:"POST"});setSelected(await r.json());await load()}finally{setBusy(false)}}
- useEffect(()=>{load();const id=setInterval(load,5000);return()=>clearInterval(id)},[]);
- if(!data)return <div className="loading">Loading FinGuard…</div>;
- return <div className="app">
-  <header><div className="brand"><div className="logo"><ShieldCheck size={24}/></div><div><h1>FinGuard</h1><p>AI Fraud Prevention</p></div></div>
-  <button className="simulate" onClick={simulate} disabled={busy}><Zap size={17}/>{busy?"Scoring…":"Simulate Transaction"}</button></header>
-  <section className="hero"><div><div className="eyebrow">TEAM ZEROBUG · REAL-TIME DEFENSE</div><h2>Detect fraud before the transaction becomes a loss.</h2><p>Behavioral signals + account relationship graphs + risk policy in one scoring pipeline.</p></div><div className="hero-status"><span className="pulse"></span>ENGINE ONLINE</div></section>
-  <section className="metrics">
-   <Metric icon={Activity} label="Transactions" value={data.total} sub="processed by demo engine"/>
-   <Metric icon={AlertTriangle} label="High risk" value={data.high_risk} sub={`${data.high_risk_rate}% of transactions`}/>
-   <Metric icon={Network} label="Step-up" value={data.step_up} sub="additional verification"/>
-   <Metric icon={RefreshCw} label="Avg risk" value={data.avg_risk.toFixed(2)} sub="0.00 → 1.00"/>
-  </section>
-  <section className="grid">
-   <div className="card"><div className="card-head"><h3>Execution Pipeline</h3><span>Sub-second target</span></div><div className="pipeline">
-    <div><b>01</b><strong>Payload Stream</strong><small>Transaction + device signals</small></div>
-    <div><b>02</b><strong>Graph Analysis</strong><small>Account/device/IP relationships</small></div>
-    <div><b>03</b><strong>Behavior Model</strong><small>Biometric deviation scoring</small></div>
-    <div><b>04</b><strong>Action Decision</strong><small>Approve / Step-up / Freeze</small></div>
-   </div></div>
-   <div className="card"><div className="card-head"><h3>Architecture</h3><span>FinGuard MVP</span></div><div className="architecture">
-    <div>React Dashboard</div><span>→</span><div>FastAPI</div><span>→</span><div>Fraud Engine</div>
-    <div>PostgreSQL</div><span>+</span><div>Neo4j</div><span>+</span><div>Redis</div>
-   </div></div>
-  </section>
-  <section className="card feed"><div className="card-head"><h3>Live Risk Feed</h3><span>auto-refresh 5s</span></div><div className="table">
-   <div className="tr th"><span>Account</span><span>Merchant</span><span>Amount</span><span>Risk</span><span>Action</span></div>
-   {data.recent.map(tx=><div className="tr" key={tx.id} onClick={()=>setSelected(tx)}><span>{tx.account_id}</span><span>{tx.merchant}</span><span>₹{Number(tx.amount).toLocaleString()}</span><span className="risk">{Number(tx.risk_score).toFixed(2)}</span><span><RiskBadge action={tx.action}/></span></div>)}
-  </div></section>
-  {selected&&<div className="modal-backdrop" onClick={()=>setSelected(null)}><div className="modal" onClick={e=>e.stopPropagation()}>
-   <div className="card-head"><h3>Transaction #{selected.id}</h3><RiskBadge action={selected.action}/></div>
-   <div className="score-big">{Number(selected.risk_score).toFixed(2)}</div><p className="muted">Risk score</p><h4>Reasons</h4>
-   <ul>{selected.reasons?.map((r,i)=><li key={i}>{r}</li>)}</ul><button className="close" onClick={()=>setSelected(null)}>Close</button>
-  </div></div>}
- </div>
+  async function loadDashboard() {
+    try {
+      const data = await apiRequest("/api/dashboard");
+      setDashboardData(data);
+      setUnreadAlertsCount(data?.unread_alerts_count || 0);
+    } catch (err) {
+      console.error("Dashboard fetch error:", err);
+    }
+  }
+
+  useEffect(() => {
+    loadDashboard();
+    const interval = setInterval(loadDashboard, 8000);
+    return () => clearInterval(interval);
+  }, [user]);
+
+  async function handleRefreshAll() {
+    setRefreshing(true);
+    await loadDashboard();
+    setRefreshing(false);
+  }
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-[#0b0f19] flex items-center justify-center text-slate-400 text-sm">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full animate-spin"></div>
+          <span>Initializing FinGuard Financial Immune OS...</span>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="min-h-screen bg-[#0b0f19] text-slate-100 flex flex-col font-sans selection:bg-indigo-500 selection:text-white">
+      {/* Top Navigation */}
+      <Navbar
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        unreadCount={unreadAlertsCount}
+        onOpenAlerts={() => setAlertsModalOpen(true)}
+        onRefreshData={handleRefreshAll}
+      />
+
+      {/* Main Container */}
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        {activeTab === "auth" && !user && (
+          <AuthModal onSuccess={() => setActiveTab("dashboard")} />
+        )}
+
+        {activeTab === "dashboard" && (
+          <DashboardView
+            dashboardData={dashboardData}
+            onRefresh={handleRefreshAll}
+            onNavigate={tab => setActiveTab(tab)}
+          />
+        )}
+
+        {activeTab === "accounts" && (
+          user ? (
+            <AccountsView onRefreshParent={handleRefreshAll} />
+          ) : (
+            <AuthModal onSuccess={() => setActiveTab("accounts")} />
+          )
+        )}
+
+        {activeTab === "transactions" && (
+          user ? (
+            <TransactionsView onRefreshParent={handleRefreshAll} />
+          ) : (
+            <AuthModal onSuccess={() => setActiveTab("transactions")} />
+          )
+        )}
+
+        {activeTab === "emi" && (
+          user ? (
+            <EMIView onRefreshParent={handleRefreshAll} />
+          ) : (
+            <AuthModal onSuccess={() => setActiveTab("emi")} />
+          )
+        )}
+
+        {activeTab === "goals" && (
+          user ? (
+            <GoalsView onRefreshParent={handleRefreshAll} />
+          ) : (
+            <AuthModal onSuccess={() => setActiveTab("goals")} />
+          )
+        )}
+
+        {activeTab === "simulator" && (
+          <SimulatorView />
+        )}
+
+        {activeTab === "assistant" && (
+          user ? (
+            <AssistantView />
+          ) : (
+            <AuthModal onSuccess={() => setActiveTab("assistant")} />
+          )
+        )}
+
+        {activeTab === "reports" && (
+          user ? (
+            <ReportsView />
+          ) : (
+            <AuthModal onSuccess={() => setActiveTab("reports")} />
+          )
+        )}
+
+        {activeTab === "security" && (
+          user ? (
+            <SecurityView />
+          ) : (
+            <AuthModal onSuccess={() => setActiveTab("security")} />
+          )
+        )}
+      </main>
+
+      {/* Smart Alerts Modal */}
+      <AlertsModal
+        isOpen={alertsModalOpen}
+        onClose={() => setAlertsModalOpen(false)}
+        onRefreshCount={loadDashboard}
+      />
+
+      {/* Footer */}
+      <footer className="border-t border-slate-800/80 py-4 bg-slate-950/40 text-center text-xs text-slate-500">
+        <div className="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-2">
+          <span>FinGuard · Team ZeroBug · Financial Immune System & Real-Time Defense</span>
+          <span>FastAPI · SQLAlchemy · React · Tailwind CSS · Recharts</span>
+        </div>
+      </footer>
+    </div>
+  );
+}
+
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  );
 }
