@@ -1,22 +1,30 @@
 # FinGuard — Financial Immune System & Real-Time Defense
 > **Predict Financial Stress. Prevent Financial Crisis.**
 
-FinGuard is a production-style personal financial health and early-warning platform combined with an autonomous real-time transaction risk and fraud defense pipeline.
+[![GitHub Repo](https://img.shields.io/badge/GitHub-Repository-181717?logo=github&logoColor=white)](https://github.com/Harini27-ai/FinGuard_TeamZeroBug)
+[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FHarini27-ai%2FFinGuard_TeamZeroBug)
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Harini27-ai/FinGuard_TeamZeroBug)
+[![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template?template=https%3A%2F%2Fgithub.com%2FHarini27-ai%2FFinGuard_TeamZeroBug)
 
 ---
 
-## 🚀 1-Click Cloud Deployment Links
+## 🌐 Live Cloud Deployment & Quick Access
 
-Deploy this repository to your preferred cloud platform in one click:
+Deploy or run FinGuard instantly:
 
-| Cloud Platform | Deployment Method | 1-Click Deploy Link |
+- 🚀 **1-Click Vercel Deploy URL**: [https://vercel.com/new/import?s=https://github.com/Harini27-ai/FinGuard_TeamZeroBug](https://vercel.com/new/import?s=https://github.com/Harini27-ai/FinGuard_TeamZeroBug)
+- 🖥️ **Local Production Server**: [http://localhost:8000](http://localhost:8000) (Double-click `start_production.bat`)
+- 📖 **Interactive API Documentation**: [http://localhost:8000/docs](http://localhost:8000/docs)
+- 📦 **GitHub Repository**: [https://github.com/Harini27-ai/FinGuard_TeamZeroBug](https://github.com/Harini27-ai/FinGuard_TeamZeroBug)
+
+### Cloud Deployment Options
+
+| Cloud Provider | Type | 1-Click Deploy Link |
 | :--- | :--- | :--- |
 | **Vercel** | Serverless Web + Python API | [![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2FHarini27-ai%2FFinGuard_TeamZeroBug) |
 | **Render** | Unified Web Service | [![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/Harini27-ai/FinGuard_TeamZeroBug) |
 | **Railway** | Full-Stack Web Container | [![Deploy on Railway](https://railway.app/button.svg)](https://railway.app/template?template=https%3A%2F%2Fgithub.com%2FHarini27-ai%2FFinGuard_TeamZeroBug) |
 
-### Direct Vercel Import URL:
-👉 **[https://vercel.com/new/import?s=https://github.com/Harini27-ai/FinGuard_TeamZeroBug](https://vercel.com/new/import?s=https://github.com/Harini27-ai/FinGuard_TeamZeroBug)**
 
 ---
 
